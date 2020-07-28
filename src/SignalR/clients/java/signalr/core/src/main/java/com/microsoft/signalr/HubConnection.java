@@ -1412,12 +1412,10 @@ public class HubConnection implements AutoCloseable {
 
             if (pingTimer != null) {
                 pingTimer.cancel();
-                pingTimer = null;
             }
 
             if (this.handshakeTimeout != null) {
                 this.handshakeTimeout.shutdownNow();
-                this.handshakeTimeout = null;
             }
         }
 
