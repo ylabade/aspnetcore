@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.AspNetCore.Http.Features
 {
@@ -40,6 +41,6 @@ namespace Microsoft.AspNetCore.Http.Features
         /// </summary>
         /// <typeparam name="TFeature">The feature key.</typeparam>
         /// <param name="instance">The feature value.</param>
-        void Set<TFeature>(TFeature instance);
+        void Set<TFeature>([AllowNull] TFeature instance);
     }
 }
