@@ -23,13 +23,11 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Certificates
         public IHostEnvironment HostEnvironment { get; }
         public ILogger<KestrelServer> Logger { get; }
 
-        public bool IsTestMock => false;
-
-        public X509Certificate2 LoadCertificate(CertificateConfig certInfo, string endpointName)
+        public (X509Certificate2, X509Certificate2Collection) LoadCertificate(CertificateConfig certInfo, string endpointName)
         {
             if (certInfo is null)
             {
-                return null;
+                return (null, null);
             }
 
             if (certInfo.IsFileCert && certInfo.IsStoreCert)
@@ -39,9 +37,21 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Certificates
             else if (certInfo.IsFileCert)
             {
                 var certificatePath = Path.Combine(HostEnvironment.ContentRootPath, certInfo.Path);
+
+                X509Certificate2Collection intermediates = null;
+
+                if (certInfo.ChainPath != null)
+                {
+                    var certificateChainPath = Path.Combine(HostEnvironment.ContentRootPath, certInfo.ChainPath);
+
+                    intermediates = new X509Certificate2Collection();
+                    intermediates.ImportFromPemFile(certificateChainPath);
+                }
+
                 if (certInfo.KeyPath != null)
                 {
                     var certificateKeyPath = Path.Combine(HostEnvironment.ContentRootPath, certInfo.KeyPath);
+
                     var certificate = GetCertificate(certificatePath);
 
                     if (certificate != null)
@@ -57,10 +67,10 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Certificates
                     {
                         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                         {
-                            return PersistKey(certificate);
+                            return (PersistKey(certificate), intermediates);
                         }
 
-                        return certificate;
+                        return (certificate, intermediates);
                     }
                     else
                     {
@@ -70,14 +80,14 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Certificates
                     throw new InvalidOperationException(CoreStrings.InvalidPemKey);
                 }
 
-                return new X509Certificate2(Path.Combine(HostEnvironment.ContentRootPath, certInfo.Path), certInfo.Password);
+                return (new X509Certificate2(Path.Combine(HostEnvironment.ContentRootPath, certInfo.Path), certInfo.Password), intermediates);
             }
             else if (certInfo.IsStoreCert)
             {
-                return LoadFromStoreCert(certInfo);
+                return (LoadFromStoreCert(certInfo), null);
             }
 
-            return null;
+            return (null, null);
         }
 
         private static X509Certificate2 PersistKey(X509Certificate2 fullCertificate)
