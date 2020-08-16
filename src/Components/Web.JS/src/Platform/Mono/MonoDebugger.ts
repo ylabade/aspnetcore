@@ -4,18 +4,24 @@ const currentBrowserIsChrome = (window as any).chrome
   && navigator.userAgent.indexOf('Edge') < 0; // Edge pretends to be Chrome
 
 let hasReferencedPdbs = false;
+let isBrowserDebuggable;
 
-export function hasDebuggingEnabled() {
-  return hasReferencedPdbs && currentBrowserIsChrome;
+export async function hasDebuggingEnabled() {
+  if (typeof isBrowserDebuggable !== "boolean") {
+    const response = await fetch("/_framework/is-debugging");
+    isBrowserDebuggable = await response.text() === 'True';
+  }
+  return isBrowserDebuggable && hasReferencedPdbs && currentBrowserIsChrome;
 }
 
-export function attachDebuggerHotkey(resourceLoader: WebAssemblyResourceLoader) {
+export async function attachDebuggerHotkey(resourceLoader: WebAssemblyResourceLoader) {
   hasReferencedPdbs = !!resourceLoader.bootConfig.resources.pdb;
 
   // Use the combination shift+alt+D because it isn't used by the major browsers
   // for anything else by default
   const altKeyName = navigator.platform.match(/^Mac/i) ? 'Cmd' : 'Alt';
-  if (hasDebuggingEnabled()) {
+  const isDebuggingEnabled = await hasDebuggingEnabled();
+  if (isDebuggingEnabled) {
     console.info(`Debugging hotkey: Shift+${altKeyName}+D (when application has focus)`);
   }
 
@@ -26,9 +32,11 @@ export function attachDebuggerHotkey(resourceLoader: WebAssemblyResourceLoader) 
         console.error('Cannot start debugging, because the application was not compiled with debugging enabled.');
       } else if (!currentBrowserIsChrome) {
         console.error('Currently, only Microsoft Edge (80+), or Google Chrome, are supported for debugging.');
-      } else {
-        launchDebugger();
+      } else if (!isBrowserDebuggable) {
+        console.error('Browser must be started with remote debugging enabled.');
       }
+    } else {
+      launchDebugger();
     }
   });
 }
