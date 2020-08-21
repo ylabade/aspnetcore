@@ -117,8 +117,8 @@ Usage: dotnet msbuild /t:Helix src/MyTestProject.csproj
         <TestAssembly>$(TargetFileName)</TestAssembly>
         <PreCommands>@(HelixPreCommand)</PreCommands>
         <PostCommands>@(HelixPostCommand)</PostCommands>
-        <Command Condition="$(IsWindowsHelixQueue)">call runtests.cmd $(TargetFileName) 5.0.100-rc.1.20418.3 $(MicrosoftNETCoreAppRuntimeVersion) $(_HelixFriendlyNameTargetQueue) $(TargetArchitecture) $(RunQuarantinedTests) $(DotnetEfPackageVersion) Microsoft.AspNetCore.App.Runtime.win-x64.$(AppRuntimeVersion).nupkg Microsoft.AspNetCore.App.Ref.$(AppRuntimeVersion).nupkg $(HelixTimeout)</Command>
-        <Command Condition="!$(IsWindowsHelixQueue)">./runtests.sh $(TargetFileName) 5.0.100-rc.1.20418.3 $(MicrosoftNETCoreAppRuntimeVersion) $(_HelixFriendlyNameTargetQueue) $(TargetArchitecture) $(RunQuarantinedTests) $(DotnetEfPackageVersion) Microsoft.AspNetCore.App.Runtime.win-x64.$(AppRuntimeVersion).nupkg Microsoft.AspNetCore.App.Ref.$(AppRuntimeVersion).nupkg $(HelixTimeout)</Command>
+        <Command Condition="$(IsWindowsHelixQueue)">call runtests.cmd $(TargetFileName) 5.0.100-rc.1.20421.12 $(MicrosoftNETCoreAppRuntimeVersion) $(_HelixFriendlyNameTargetQueue) $(TargetArchitecture) $(RunQuarantinedTests) $(DotnetEfPackageVersion) Microsoft.AspNetCore.App.Runtime.win-x64.$(AppRuntimeVersion).nupkg Microsoft.AspNetCore.App.Ref.$(AppRuntimeVersion).nupkg $(HelixTimeout)</Command>
+        <Command Condition="!$(IsWindowsHelixQueue)">./runtests.sh $(TargetFileName) 5.0.100-rc.1.20421.12 $(MicrosoftNETCoreAppRuntimeVersion) $(_HelixFriendlyNameTargetQueue) $(TargetArchitecture) $(RunQuarantinedTests) $(DotnetEfPackageVersion) Microsoft.AspNetCore.App.Runtime.win-x64.$(AppRuntimeVersion).nupkg Microsoft.AspNetCore.App.Ref.$(AppRuntimeVersion).nupkg $(HelixTimeout)</Command>
         <Command Condition="$(HelixCommand) != ''">$(HelixCommand)</Command>
         <Timeout>$(HelixTimeout)</Timeout>
       </HelixWorkItem>
