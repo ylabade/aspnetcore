@@ -34,7 +34,7 @@ namespace Microsoft.AspNetCore.Cors.Infrastructure
             policyName ??= _options.DefaultPolicyName;
             if (_options.PolicyMap.TryGetValue(policyName, out var result))
             {
-                return result.policyTask!;
+                return result.policyTask.AsNullable();
             }
 
             return NullResult;

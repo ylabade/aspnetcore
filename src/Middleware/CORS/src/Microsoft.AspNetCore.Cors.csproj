@@ -23,4 +23,8 @@ Microsoft.AspNetCore.Cors.EnableCorsAttribute</Description>
     <Reference Include="Microsoft.Extensions.Options" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="$(SharedSourceRoot)Nullable\NullableTaskExtensions.cs" />
+  </ItemGroup>
+
 </Project>

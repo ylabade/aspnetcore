@@ -179,16 +179,16 @@ namespace Microsoft.AspNetCore.Builder
                     string.Format(CultureInfo.InvariantCulture, pathFormat, context.HttpContext.Response.StatusCode));
                 var formatedQueryString = queryFormat == null ? null :
                     string.Format(CultureInfo.InvariantCulture, queryFormat, context.HttpContext.Response.StatusCode);
-                var newQueryString = queryFormat == null ? QueryString.Empty : new QueryString(formatedQueryString);
+                var newQueryString = formatedQueryString == null ? QueryString.Empty : new QueryString(formatedQueryString);
 
                 var originalPath = context.HttpContext.Request.Path;
                 var originalQueryString = context.HttpContext.Request.QueryString;
                 // Store the original paths so the app can check it.
                 context.HttpContext.Features.Set<IStatusCodeReExecuteFeature>(new StatusCodeReExecuteFeature()
                 {
-                    OriginalPathBase = context.HttpContext.Request.PathBase.Value,
-                    OriginalPath = originalPath.Value,
-                    OriginalQueryString = originalQueryString.HasValue ? originalQueryString.Value : null,
+                    OriginalPathBase = context.HttpContext.Request.PathBase.Value!,
+                    OriginalPath = originalPath.Value!,
+                    OriginalQueryString = originalQueryString.Value!,
                 });
 
                 // An endpoint may have already been set. Since we're going to re-invoke the middleware pipeline we need to reset

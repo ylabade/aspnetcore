@@ -42,6 +42,7 @@ namespace Microsoft.AspNetCore.Http
         /// <summary>
         /// True if the query string is not empty
         /// </summary>
+        [MemberNotNullWhen(true, nameof(Value))]
         public bool HasValue => !string.IsNullOrEmpty(Value);
 
         /// <summary>

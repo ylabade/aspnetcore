@@ -11,9 +11,9 @@ namespace Microsoft.AspNetCore.Http.Features
 {
     public class FeatureCollection : IFeatureCollection
     {
-        private static KeyComparer FeatureKeyComparer = new KeyComparer();
+        private static readonly KeyComparer FeatureKeyComparer = new KeyComparer();
         private readonly IFeatureCollection? _defaults;
-        private IDictionary<Type, object>? _features;
+        private IDictionary<Type, object?>? _features;
         private volatile int _containerRevision;
 
         public FeatureCollection()
@@ -62,7 +62,7 @@ namespace Microsoft.AspNetCore.Http.Features
 
                 if (_features == null)
                 {
-                    _features = new Dictionary<Type, object>();
+                    _features = new Dictionary<Type, object?>();
                 }
                 _features[key] = value;
                 _containerRevision++;
@@ -74,7 +74,7 @@ namespace Microsoft.AspNetCore.Http.Features
             return GetEnumerator();
         }
 
-        public IEnumerator<KeyValuePair<Type, object>> GetEnumerator()
+        public IEnumerator<KeyValuePair<Type, object?>> GetEnumerator()
         {
             if (_features != null)
             {
@@ -94,25 +94,24 @@ namespace Microsoft.AspNetCore.Http.Features
             }
         }
 
-        [return: MaybeNull]
-        public TFeature Get<TFeature>()
+        public TFeature? Get<TFeature>()
         {
-            return (TFeature)this[typeof(TFeature)];
+            return (TFeature?)this[typeof(TFeature)];
         }
 
-        public void Set<TFeature>([AllowNull] TFeature instance)
+        public void Set<TFeature>(TFeature? instance)
         {
             this[typeof(TFeature)] = instance;
         }
 
-        private class KeyComparer : IEqualityComparer<KeyValuePair<Type, object>>
+        private class KeyComparer : IEqualityComparer<KeyValuePair<Type, object?>>
         {
-            public bool Equals(KeyValuePair<Type, object> x, KeyValuePair<Type, object> y)
+            public bool Equals(KeyValuePair<Type, object?> x, KeyValuePair<Type, object?> y)
             {
                 return x.Key.Equals(y.Key);
             }
 
-            public int GetHashCode(KeyValuePair<Type, object> obj)
+            public int GetHashCode(KeyValuePair<Type, object?> obj)
             {
                 return obj.Key.GetHashCode();
             }

@@ -27,7 +27,7 @@ namespace Microsoft.AspNetCore.Http.Abstractions
             Assert.False(query.HasValue);
             Assert.Null(query.Value);
 
-            query = new QueryString(null);
+            query = new QueryString(null!);
             Assert.False(query.HasValue);
             Assert.Null(query.Value);
 

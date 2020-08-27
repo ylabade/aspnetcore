@@ -3,14 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.AspNetCore.Http.Features
 {
     /// <summary>
     /// Represents a collection of HTTP features.
     /// </summary>
-    public interface IFeatureCollection : IEnumerable<KeyValuePair<Type, object>>
+    public interface IFeatureCollection : IEnumerable<KeyValuePair<Type, object?>>
     {
         /// <summary>
         /// Indicates if the collection can be modified.
@@ -34,13 +33,13 @@ namespace Microsoft.AspNetCore.Http.Features
         /// </summary>
         /// <typeparam name="TFeature">The feature key.</typeparam>
         /// <returns>The requested feature, or null if it is not present.</returns>
-        TFeature Get<TFeature>();
+        TFeature? Get<TFeature>();
 
         /// <summary>
         /// Sets the given feature in the collection.
         /// </summary>
         /// <typeparam name="TFeature">The feature key.</typeparam>
         /// <param name="instance">The feature value.</param>
-        void Set<TFeature>([AllowNull] TFeature instance);
+        void Set<TFeature>(TFeature? instance);
     }
 }
