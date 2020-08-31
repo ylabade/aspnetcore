@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <TargetFramework>$(DefaultNetCoreTargetFramework)</TargetFramework>
@@ -13,21 +14,24 @@
     <IsProjectReferenceProvider>false</IsProjectReferenceProvider>
 
     <!--
-      This project compiles against Microsoft.AspNetCore.App from the SDK.
+      This project compiles against Microsoft.AspNetCore.App that's just been built, not the one in the SDK.
       This ensures that it's packaging output is correct and does not include local artifacts.
     -->
     <UseAspNetCoreSharedRuntime>true</UseAspNetCoreSharedRuntime>
-    <DoNotApplyWorkaroundsToMicrosoftAspNetCoreApp>true</DoNotApplyWorkaroundsToMicrosoftAspNetCoreApp>
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-
-    <ProjectReference
-      Include="$(RepoRoot)src\Framework\App.Runtime\src\Microsoft.AspNetCore.App.Runtime.csproj"
-      PrivateAssets="All"
-      ReferenceOutputAssembly="false"
-      SkipGetTargetFrameworkProperties="true" />
+    <!-- Ensure "just been built" is correct. -->
+    <ProjectReference Include="$(RepoRoot)src\Framework\App.Ref\src\Microsoft.AspNetCore.App.Runtime.csproj"
+        Condition=" ! $(IsTargetingPackBuilding) "
+        PrivateAssets="All"
+        ReferenceOutputAssembly="false"
+        SkipGetTargetFrameworkProperties="true" />
+    <ProjectReference Include="$(RepoRoot)src\Framework\App.Ref\src\Microsoft.AspNetCore.App.Ref.csproj"
+        Condition=" $(IsTargetingPackBuilding) "
+        PrivateAssets="All"
+        ReferenceOutputAssembly="false"
+        SkipGetTargetFrameworkProperties="true" />
 
     <Reference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <Compile Include="$(SharedSourceRoot)CommandLineUtils\**\*.cs" />
@@ -45,5 +49,10 @@
     <NuspecProperty Include="PackageThirdPartyNoticesFile=$(PackageThirdPartyNoticesFile)" />
   </ItemGroup>
 
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
+  <ItemGroup>
+    <!-- Safe to add @(FrameworkReference) item after normal removal is behind us. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 </Project>
