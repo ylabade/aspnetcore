@@ -168,7 +168,7 @@ namespace InteropTestsClient
                 httpClientHandler.ClientCertificates.Add(cert);
             }
 
-            var httpClient = new HttpClient(new VersionPolicyHandler(httpClientHandler));
+            var httpClient = new HttpClient(httpClientHandler);
 
             var channel = GrpcChannel.ForAddress($"{scheme}://{options.ServerHost}:{options.ServerPort}", new GrpcChannelOptions
             {
@@ -178,21 +178,6 @@ namespace InteropTestsClient
             });
 
             return new GrpcChannelWrapper(channel);
-        }
-
-        // TODO(JamesNK): This type can be removed in the future when Grpc.Net.Client sets VersionPolicy automatically.
-        // https://github.com/grpc/grpc-dotnet/pull/987
-        private class VersionPolicyHandler : DelegatingHandler
-        {
-            public VersionPolicyHandler(HttpMessageHandler innerHandler) : base(innerHandler)
-            {
-            }
-
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-            {
-                request.VersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-                return base.SendAsync(request, cancellationToken);
-            }
         }
 
         private async Task<ChannelCredentials> CreateCredentialsAsync(bool? useTestCaOverride = null)
