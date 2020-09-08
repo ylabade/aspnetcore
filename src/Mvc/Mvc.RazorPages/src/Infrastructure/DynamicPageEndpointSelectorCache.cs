@@ -47,7 +47,7 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
                 throw new InvalidOperationException($"Data source with key '{key}' not registered.");
             }
 
-            return new DynamicPageEndpointSelector((PageActionEndpointDataSource)dataSource);
+            return new DynamicPageEndpointSelector(dataSource);
         }
     }
 }

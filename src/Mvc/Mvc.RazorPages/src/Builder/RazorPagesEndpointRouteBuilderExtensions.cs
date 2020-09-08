@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
@@ -381,8 +382,9 @@ namespace Microsoft.AspNetCore.Builder
             var dataSource = endpoints.DataSources.OfType<PageActionEndpointDataSource>().FirstOrDefault();
             if (dataSource == null)
             {
+                var orderProviderCache = endpoints.ServiceProvider.GetRequiredService<OrderedEndpointsSequenceProviderCache>();
                 var factory = endpoints.ServiceProvider.GetRequiredService<PageActionEndpointDataSourceFactory>();
-                dataSource = factory.Create();
+                dataSource = factory.Create(orderProviderCache.GetOrCreateOrderedEndpointsSequenceProvider(endpoints));
                 endpoints.DataSources.Add(dataSource);
             }
 

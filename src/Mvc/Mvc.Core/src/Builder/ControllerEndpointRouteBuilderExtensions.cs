@@ -552,8 +552,9 @@ namespace Microsoft.AspNetCore.Builder
             var dataSource = endpoints.DataSources.OfType<ControllerActionEndpointDataSource>().FirstOrDefault();
             if (dataSource == null)
             {
+                var orderProvider = endpoints.ServiceProvider.GetRequiredService<OrderedEndpointsSequenceProviderCache>();
                 var factory = endpoints.ServiceProvider.GetRequiredService<ControllerActionEndpointDataSourceFactory>();
-                dataSource = factory.Create();
+                dataSource = factory.Create(orderProvider.GetOrCreateOrderedEndpointsSequenceProvider(endpoints));
                 endpoints.DataSources.Add(dataSource);
             }
 
