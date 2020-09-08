@@ -5,7 +5,7 @@ namespace Microsoft.AspNetCore.Mvc.Infrastructure
 {
     internal class OrderedEndpointsSequenceProvider
     {
-        private object Lock = new object();
+        private readonly object Lock = new object();
 
         // In traditional conventional routing setup, the routes defined by a user have a order
         // defined by how they are added into the list. We would like to maintain the same order when building

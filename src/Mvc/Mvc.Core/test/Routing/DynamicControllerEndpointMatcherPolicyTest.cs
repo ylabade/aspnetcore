@@ -19,7 +19,7 @@ namespace Microsoft.AspNetCore.Mvc.Routing
     {
         public DynamicControllerEndpointMatcherPolicyTest()
         {
-            var dataSourceKey = new EndpointDataSourceIdMetadata(1);
+            var dataSourceKey = new ControllerEndpointDataSourceIdMetadata(1);
             var actions = new ActionDescriptor[]
             {
                 new ControllerActionDescriptor()

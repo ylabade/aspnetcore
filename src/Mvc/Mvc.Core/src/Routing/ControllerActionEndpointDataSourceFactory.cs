@@ -7,12 +7,18 @@ namespace Microsoft.AspNetCore.Mvc.Infrastructure
 {
     internal class ControllerActionEndpointDataSourceFactory
     {
+        private readonly OrderedEndpointsSequenceProvider _orderProvider;
         private readonly ControllerActionEndpointDataSourceIdProvider _dataSourceIdProvider;
         private readonly IActionDescriptorCollectionProvider _actions;
         private readonly ActionEndpointFactory _factory;
 
-        public ControllerActionEndpointDataSourceFactory(ControllerActionEndpointDataSourceIdProvider dataSourceIdProvider, IActionDescriptorCollectionProvider actions, ActionEndpointFactory factory)
+        public ControllerActionEndpointDataSourceFactory(
+            ControllerActionEndpointDataSourceIdProvider dataSourceIdProvider,
+            IActionDescriptorCollectionProvider actions,
+            ActionEndpointFactory factory,
+            OrderedEndpointsSequenceProvider orderProvider)
         {
+            _orderProvider = orderProvider;
             _dataSourceIdProvider = dataSourceIdProvider;
             _actions = actions;
             _factory = factory;
@@ -20,7 +26,7 @@ namespace Microsoft.AspNetCore.Mvc.Infrastructure
 
         public ControllerActionEndpointDataSource Create()
         {
-            return new ControllerActionEndpointDataSource(_dataSourceIdProvider, _actions, _factory);
+            return new ControllerActionEndpointDataSource(_dataSourceIdProvider, _actions, _factory, _orderProvider);
         }
     }
 }

@@ -224,7 +224,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 // MVC registers a policy that looks for this metadata.
                 b.Metadata.Add(CreateDynamicControllerMetadata(action, controller, area: null));
-                b.Metadata.Add(new EndpointDataSourceIdMetadata(dataSource.DataSourceId));
+                b.Metadata.Add(new ControllerEndpointDataSourceIdMetadata(dataSource.DataSourceId));
             });
             return builder;
         }
@@ -303,7 +303,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 // MVC registers a policy that looks for this metadata.
                 b.Metadata.Add(CreateDynamicControllerMetadata(action, controller, area: null));
-                b.Metadata.Add(new EndpointDataSourceIdMetadata(dataSource.DataSourceId));
+                b.Metadata.Add(new ControllerEndpointDataSourceIdMetadata(dataSource.DataSourceId));
             });
             return builder;
         }
@@ -374,7 +374,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 // MVC registers a policy that looks for this metadata.
                 b.Metadata.Add(CreateDynamicControllerMetadata(action, controller, area));
-                b.Metadata.Add(new EndpointDataSourceIdMetadata(dataSource.DataSourceId));
+                b.Metadata.Add(new ControllerEndpointDataSourceIdMetadata(dataSource.DataSourceId));
             });
             return builder;
         }
@@ -455,7 +455,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 // MVC registers a policy that looks for this metadata.
                 b.Metadata.Add(CreateDynamicControllerMetadata(action, controller, area));
-                b.Metadata.Add(new EndpointDataSourceIdMetadata(dataSource.DataSourceId));
+                b.Metadata.Add(new ControllerEndpointDataSourceIdMetadata(dataSource.DataSourceId));
             });
             return builder;
         }
@@ -520,7 +520,7 @@ namespace Microsoft.AspNetCore.Builder
             // Called for side-effect to make sure that the data source is registered.
             var controllerDataSource = GetOrCreateDataSource(endpoints);
             RegisterInCache(endpoints.ServiceProvider, controllerDataSource);
-            
+
             // The data source is just used to share the common order with conventionally routed actions.
             controllerDataSource.AddDynamicControllerEndpoint(endpoints, pattern, typeof(TTransformer), state);
         }

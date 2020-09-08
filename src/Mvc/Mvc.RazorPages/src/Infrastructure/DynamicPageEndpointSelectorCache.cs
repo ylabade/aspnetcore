@@ -1,6 +1,3 @@
-// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,12 +7,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace Microsoft.AspNetCore.Mvc.Routing
+namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
 {
-    internal class DynamicControllerEndpointSelectorCache : IDisposable
+    internal class DynamicPageEndpointSelectorCache
     {
         private ConcurrentDictionary<int, EndpointDataSource> _dataSourceCache = new();
-        private ConcurrentDictionary<int, DynamicControllerEndpointSelector> _endpointSelectorCache = new();
+        private ConcurrentDictionary<int, DynamicPageEndpointSelector> _endpointSelectorCache = new();
 
         public void Dispose()
         {
@@ -23,7 +20,7 @@ namespace Microsoft.AspNetCore.Mvc.Routing
             _endpointSelectorCache.Clear();
         }
 
-        public void AddDataSource(ControllerActionEndpointDataSource dataSource)
+        public void AddDataSource(PageActionEndpointDataSource dataSource)
         {
             _dataSourceCache.GetOrAdd(dataSource.DataSourceId, dataSource);
         }
@@ -32,25 +29,25 @@ namespace Microsoft.AspNetCore.Mvc.Routing
         internal void AddDataSource(EndpointDataSource dataSource, int key) =>
             _dataSourceCache.GetOrAdd(key, dataSource);
 
-        public DynamicControllerEndpointSelector GetEndpointSelector(Endpoint endpoint)
+        public DynamicPageEndpointSelector GetEndpointSelector(Endpoint endpoint)
         {
             if (endpoint?.Metadata == null)
             {
                 return null;
             }
 
-            var dataSourceId = endpoint.Metadata.GetMetadata<ControllerEndpointDataSourceIdMetadata>();
+            var dataSourceId = endpoint.Metadata.GetMetadata<PageEndpointDataSourceIdMetadata>();
             return _endpointSelectorCache.GetOrAdd(dataSourceId.Id, (int key) => EnsureDataSource(key));
 
         }
-        private DynamicControllerEndpointSelector EnsureDataSource(int key)
+        private DynamicPageEndpointSelector EnsureDataSource(int key)
         {
             if (!_dataSourceCache.TryGetValue(key, out var dataSource))
             {
                 throw new InvalidOperationException($"Data source with key '{key}' not registered.");
             }
 
-            return new DynamicControllerEndpointSelector(dataSource);
+            return new DynamicPageEndpointSelector((PageActionEndpointDataSource)dataSource);
         }
     }
 }

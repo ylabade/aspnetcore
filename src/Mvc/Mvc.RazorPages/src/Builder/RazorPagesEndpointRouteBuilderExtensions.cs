@@ -75,7 +75,9 @@ namespace Microsoft.AspNetCore.Builder
             EnsureRazorPagesServices(endpoints);
 
             // Called for side-effect to make sure that the data source is registered.
-            GetOrCreateDataSource(endpoints).CreateInertEndpoints = true;
+            var pageDataSource = GetOrCreateDataSource(endpoints);
+            pageDataSource.CreateInertEndpoints = true;
+            RegisterInCache(endpoints.ServiceProvider, pageDataSource);
 
             // Maps a fallback endpoint with an empty delegate. This is OK because
             // we don't expect the delegate to run.
@@ -84,6 +86,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 // MVC registers a policy that looks for this metadata.
                 b.Metadata.Add(CreateDynamicPageMetadata(page, area: null));
+                b.Metadata.Add(new PageEndpointDataSourceIdMetadata(pageDataSource.DataSourceId));
             });
             return builder;
         }
@@ -141,7 +144,9 @@ namespace Microsoft.AspNetCore.Builder
             EnsureRazorPagesServices(endpoints);
 
             // Called for side-effect to make sure that the data source is registered.
-            GetOrCreateDataSource(endpoints).CreateInertEndpoints = true;
+            var pageDataSource = GetOrCreateDataSource(endpoints);
+            pageDataSource.CreateInertEndpoints = true;
+            RegisterInCache(endpoints.ServiceProvider, pageDataSource);
 
             // Maps a fallback endpoint with an empty delegate. This is OK because
             // we don't expect the delegate to run.
@@ -150,6 +155,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 // MVC registers a policy that looks for this metadata.
                 b.Metadata.Add(CreateDynamicPageMetadata(page, area: null));
+                b.Metadata.Add(new PageEndpointDataSourceIdMetadata(pageDataSource.DataSourceId));
             });
             return builder;
         }
@@ -199,7 +205,9 @@ namespace Microsoft.AspNetCore.Builder
             EnsureRazorPagesServices(endpoints);
 
             // Called for side-effect to make sure that the data source is registered.
-            GetOrCreateDataSource(endpoints).CreateInertEndpoints = true;
+            var pageDataSource = GetOrCreateDataSource(endpoints);
+            pageDataSource.CreateInertEndpoints = true;
+            RegisterInCache(endpoints.ServiceProvider, pageDataSource);
 
             // Maps a fallback endpoint with an empty delegate. This is OK because
             // we don't expect the delegate to run.
@@ -208,6 +216,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 // MVC registers a policy that looks for this metadata.
                 b.Metadata.Add(CreateDynamicPageMetadata(page, area));
+                b.Metadata.Add(new PageEndpointDataSourceIdMetadata(pageDataSource.DataSourceId));
             });
             return builder;
         }
@@ -267,7 +276,9 @@ namespace Microsoft.AspNetCore.Builder
             EnsureRazorPagesServices(endpoints);
 
             // Called for side-effect to make sure that the data source is registered.
-            GetOrCreateDataSource(endpoints).CreateInertEndpoints = true;
+            var pageDataSource = GetOrCreateDataSource(endpoints);
+            pageDataSource.CreateInertEndpoints = true;
+            RegisterInCache(endpoints.ServiceProvider, pageDataSource);
 
             // Maps a fallback endpoint with an empty delegate. This is OK because
             // we don't expect the delegate to run.
@@ -276,6 +287,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 // MVC registers a policy that looks for this metadata.
                 b.Metadata.Add(CreateDynamicPageMetadata(page, area));
+                b.Metadata.Add(new PageEndpointDataSourceIdMetadata(pageDataSource.DataSourceId));
             });
             return builder;
         }
@@ -337,9 +349,10 @@ namespace Microsoft.AspNetCore.Builder
             EnsureRazorPagesServices(endpoints);
 
             // Called for side-effect to make sure that the data source is registered.
-            var dataSource = GetOrCreateDataSource(endpoints);
+            var pageDataSource = GetOrCreateDataSource(endpoints);
+            RegisterInCache(endpoints.ServiceProvider, pageDataSource);
 
-            dataSource.AddDynamicPageEndpoint(endpoints, pattern, typeof(TTransformer), state);
+            pageDataSource.AddDynamicPageEndpoint(endpoints, pattern, typeof(TTransformer), state);
         }
 
         private static DynamicPageMetadata CreateDynamicPageMetadata(string page, string area)
@@ -374,6 +387,12 @@ namespace Microsoft.AspNetCore.Builder
             }
 
             return dataSource;
+        }
+
+        private static void RegisterInCache(IServiceProvider serviceProvider, PageActionEndpointDataSource dataSource)
+        {
+            var cache = serviceProvider.GetRequiredService<DynamicPageEndpointSelectorCache>();
+            cache.AddDataSource(dataSource);
         }
     }
 }

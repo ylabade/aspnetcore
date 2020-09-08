@@ -8,18 +8,26 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
 {
     internal class PageActionEndpointDataSourceFactory
     {
+        private readonly PageActionEndpointDataSourceIdProvider _dataSourceIdProvider;
         private readonly IActionDescriptorCollectionProvider _actions;
         private readonly ActionEndpointFactory _endpointFactory;
+        private readonly OrderedEndpointsSequenceProvider _orderProvider;
 
-        public PageActionEndpointDataSourceFactory(IActionDescriptorCollectionProvider actions, ActionEndpointFactory endpointFactory)
+        public PageActionEndpointDataSourceFactory(
+            PageActionEndpointDataSourceIdProvider dataSourceIdProvider,
+            IActionDescriptorCollectionProvider actions,
+            ActionEndpointFactory endpointFactory,
+            OrderedEndpointsSequenceProvider orderProvider)
         {
+            _dataSourceIdProvider = dataSourceIdProvider;
             _actions = actions;
             _endpointFactory = endpointFactory;
+            _orderProvider = orderProvider;
         }
 
         public PageActionEndpointDataSource Create()
         {
-            return new PageActionEndpointDataSource(_actions, _endpointFactory);
+            return new PageActionEndpointDataSource(_dataSourceIdProvider, _actions, _endpointFactory, _orderProvider);
         }
     }
 }

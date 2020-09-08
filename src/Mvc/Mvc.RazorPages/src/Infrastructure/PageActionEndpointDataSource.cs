@@ -16,13 +16,16 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
     {
         private readonly ActionEndpointFactory _endpointFactory;
         private readonly OrderedEndpointsSequenceProvider _orderSequence;
+        private readonly int _dataSourceId;
 
         public PageActionEndpointDataSource(
+            PageActionEndpointDataSourceIdProvider dataSourceIdProvider,
             IActionDescriptorCollectionProvider actions,
             ActionEndpointFactory endpointFactory,
             OrderedEndpointsSequenceProvider orderedEndpoints)
             : base(actions)
         {
+            _dataSourceId = dataSourceIdProvider.CreateId();
             _endpointFactory = endpointFactory;
             _orderSequence = orderedEndpoints;
             DefaultBuilder = new PageActionEndpointConventionBuilder(Lock, Conventions);
@@ -31,6 +34,8 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
             // Change notifications can happen immediately!
             Subscribe();
         }
+
+        public int DataSourceId => _dataSourceId;
 
         public PageActionEndpointConventionBuilder DefaultBuilder { get; }
 
@@ -70,6 +75,7 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure
                     {
                         ((RouteEndpointBuilder)b).Order = order;
                         b.Metadata.Add(new DynamicPageRouteValueTransformerMetadata(transformerType, state));
+                        b.Metadata.Add(new PageEndpointDataSourceIdMetadata(_dataSourceId));
                     });
             }
         }

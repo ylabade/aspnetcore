@@ -28,8 +28,10 @@ namespace Microsoft.AspNetCore.Mvc.Routing
             : base(actions)
         {
             _endpointFactory = endpointFactory;
-            _orderSequence = orderSequence;
+
             _dataSourceId = dataSourceIdProvider.CreateId();
+            _orderSequence = orderSequence;
+
             _routes = new List<ConventionalRouteEntry>();
 
             DefaultBuilder = new ControllerActionEndpointConventionBuilder(Lock, Conventions);
@@ -124,7 +126,7 @@ namespace Microsoft.AspNetCore.Mvc.Routing
                     {
                         ((RouteEndpointBuilder)b).Order = order;
                         b.Metadata.Add(new DynamicControllerRouteValueTransformerMetadata(transformerType, state));
-                        b.Metadata.Add(new EndpointDataSourceIdMetadata(_dataSourceId));
+                        b.Metadata.Add(new ControllerEndpointDataSourceIdMetadata(_dataSourceId));
                     });
             }
         }

@@ -89,7 +89,8 @@ namespace Microsoft.Extensions.DependencyInjection
             // Routing
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, PageLoaderMatcherPolicy>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, DynamicPageEndpointMatcherPolicy>());
-            services.TryAddSingleton<DynamicPageEndpointSelector>();
+            services.TryAddSingleton<DynamicPageEndpointSelectorCache>();
+            services.TryAddSingleton<PageActionEndpointDataSourceIdProvider>();
 
             // Action description and invocation
             services.TryAddEnumerable(
@@ -98,7 +99,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 ServiceDescriptor.Singleton<IPageRouteModelProvider, CompiledPageRouteModelProvider>());
             services.TryAddSingleton<PageActionEndpointDataSourceFactory>();
             services.TryAddSingleton<PageActionEndpointDataSource>();
-            services.TryAddSingleton<DynamicPageEndpointSelector>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, DynamicPageEndpointMatcherPolicy>());
 
             services.TryAddEnumerable(
