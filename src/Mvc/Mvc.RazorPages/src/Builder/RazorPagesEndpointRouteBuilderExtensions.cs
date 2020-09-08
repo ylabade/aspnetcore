@@ -353,7 +353,7 @@ namespace Microsoft.AspNetCore.Builder
 
         private static void EnsureRazorPagesServices(IEndpointRouteBuilder endpoints)
         {
-            var marker = endpoints.ServiceProvider.GetService<PageActionEndpointDataSource>();
+            var marker = endpoints.ServiceProvider.GetService<PageActionEndpointDataSourceFactory>();
             if (marker == null)
             {
                 throw new InvalidOperationException(Mvc.Core.Resources.FormatUnableToFindServices(
@@ -368,7 +368,8 @@ namespace Microsoft.AspNetCore.Builder
             var dataSource = endpoints.DataSources.OfType<PageActionEndpointDataSource>().FirstOrDefault();
             if (dataSource == null)
             {
-                dataSource = endpoints.ServiceProvider.GetRequiredService<PageActionEndpointDataSource>();
+                var factory = endpoints.ServiceProvider.GetRequiredService<PageActionEndpointDataSourceFactory>();
+                dataSource = factory.Create();
                 endpoints.DataSources.Add(dataSource);
             }
 

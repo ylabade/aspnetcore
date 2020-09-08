@@ -96,6 +96,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 ServiceDescriptor.Singleton<IActionDescriptorProvider, PageActionDescriptorProvider>());
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IPageRouteModelProvider, CompiledPageRouteModelProvider>());
+            services.TryAddSingleton<PageActionEndpointDataSourceFactory>();
             services.TryAddSingleton<PageActionEndpointDataSource>();
             services.TryAddSingleton<DynamicPageEndpointSelector>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, DynamicPageEndpointMatcherPolicy>());
