@@ -385,7 +385,7 @@ namespace Microsoft.AspNetCore.Mvc.Routing
 
         private protected override ActionEndpointDataSourceBase CreateDataSource(IActionDescriptorCollectionProvider actions, ActionEndpointFactory endpointFactory)
         {
-            return new ControllerActionEndpointDataSource(actions, endpointFactory, new OrderedEndpointsSequenceProvider());
+            return new ControllerActionEndpointDataSource(new ControllerActionEndpointDataSourceIdProvider(), actions, endpointFactory, new OrderedEndpointsSequenceProvider());
         }
 
         protected override ActionDescriptor CreateActionDescriptor(

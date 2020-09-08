@@ -213,7 +213,9 @@ namespace Microsoft.AspNetCore.Builder
             EnsureControllerServices(endpoints);
 
             // Called for side-effect to make sure that the data source is registered.
-            GetOrCreateDataSource(endpoints).CreateInertEndpoints = true;
+            var dataSource = GetOrCreateDataSource(endpoints);
+            dataSource.CreateInertEndpoints = true;
+            RegisterInCache(endpoints.ServiceProvider, dataSource);
 
             // Maps a fallback endpoint with an empty delegate. This is OK because
             // we don't expect the delegate to run.
@@ -222,6 +224,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 // MVC registers a policy that looks for this metadata.
                 b.Metadata.Add(CreateDynamicControllerMetadata(action, controller, area: null));
+                b.Metadata.Add(new EndpointDataSourceIdMetadata(dataSource.DataSourceId));
             });
             return builder;
         }
@@ -289,7 +292,9 @@ namespace Microsoft.AspNetCore.Builder
             EnsureControllerServices(endpoints);
 
             // Called for side-effect to make sure that the data source is registered.
-            GetOrCreateDataSource(endpoints).CreateInertEndpoints = true;
+            var dataSource = GetOrCreateDataSource(endpoints);
+            dataSource.CreateInertEndpoints = true;
+            RegisterInCache(endpoints.ServiceProvider, dataSource);
 
             // Maps a fallback endpoint with an empty delegate. This is OK because
             // we don't expect the delegate to run.
@@ -298,6 +303,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 // MVC registers a policy that looks for this metadata.
                 b.Metadata.Add(CreateDynamicControllerMetadata(action, controller, area: null));
+                b.Metadata.Add(new EndpointDataSourceIdMetadata(dataSource.DataSourceId));
             });
             return builder;
         }
@@ -357,7 +363,9 @@ namespace Microsoft.AspNetCore.Builder
             EnsureControllerServices(endpoints);
 
             // Called for side-effect to make sure that the data source is registered.
-            GetOrCreateDataSource(endpoints).CreateInertEndpoints = true;
+            var dataSource = GetOrCreateDataSource(endpoints);
+            dataSource.CreateInertEndpoints = true;
+            RegisterInCache(endpoints.ServiceProvider, dataSource);
 
             // Maps a fallback endpoint with an empty delegate. This is OK because
             // we don't expect the delegate to run.
@@ -366,6 +374,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 // MVC registers a policy that looks for this metadata.
                 b.Metadata.Add(CreateDynamicControllerMetadata(action, controller, area));
+                b.Metadata.Add(new EndpointDataSourceIdMetadata(dataSource.DataSourceId));
             });
             return builder;
         }
@@ -435,7 +444,9 @@ namespace Microsoft.AspNetCore.Builder
             EnsureControllerServices(endpoints);
 
             // Called for side-effect to make sure that the data source is registered.
-            GetOrCreateDataSource(endpoints).CreateInertEndpoints = true;
+            var dataSource = GetOrCreateDataSource(endpoints);
+            dataSource.CreateInertEndpoints = true;
+            RegisterInCache(endpoints.ServiceProvider, dataSource);
 
             // Maps a fallback endpoint with an empty delegate. This is OK because
             // we don't expect the delegate to run.
@@ -444,6 +455,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 // MVC registers a policy that looks for this metadata.
                 b.Metadata.Add(CreateDynamicControllerMetadata(action, controller, area));
+                b.Metadata.Add(new EndpointDataSourceIdMetadata(dataSource.DataSourceId));
             });
             return builder;
         }
@@ -507,6 +519,7 @@ namespace Microsoft.AspNetCore.Builder
 
             // Called for side-effect to make sure that the data source is registered.
             var controllerDataSource = GetOrCreateDataSource(endpoints);
+            RegisterInCache(endpoints.ServiceProvider, controllerDataSource);
             
             // The data source is just used to share the common order with conventionally routed actions.
             controllerDataSource.AddDynamicControllerEndpoint(endpoints, pattern, typeof(TTransformer), state);
@@ -544,6 +557,12 @@ namespace Microsoft.AspNetCore.Builder
             }
 
             return dataSource;
+        }
+
+        private static void RegisterInCache(IServiceProvider serviceProvider, ControllerActionEndpointDataSource dataSource)
+        {
+            var cache = serviceProvider.GetRequiredService<DynamicControllerEndpointSelectorCache>();
+            cache.AddDataSource(dataSource);
         }
     }
 }

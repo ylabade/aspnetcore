@@ -15,14 +15,14 @@ namespace Microsoft.AspNetCore.Mvc.Routing
 {
     internal class DynamicControllerEndpointMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy
     {
-        private readonly DynamicControllerEndpointSelector _selector;
+        private readonly DynamicControllerEndpointSelectorCache _selectorCache;
         private readonly EndpointMetadataComparer _comparer;
 
-        public DynamicControllerEndpointMatcherPolicy(DynamicControllerEndpointSelector selector, EndpointMetadataComparer comparer)
+        public DynamicControllerEndpointMatcherPolicy(DynamicControllerEndpointSelectorCache selectorCache, EndpointMetadataComparer comparer)
         {
-            if (selector == null)
+            if (selectorCache == null)
             {
-                throw new ArgumentNullException(nameof(selector));
+                throw new ArgumentNullException(nameof(selectorCache));
             }
 
             if (comparer == null)
@@ -30,7 +30,7 @@ namespace Microsoft.AspNetCore.Mvc.Routing
                 throw new ArgumentNullException(nameof(comparer));
             }
 
-            _selector = selector;
+            _selectorCache = selectorCache;
             _comparer = comparer;
         }
 
@@ -78,6 +78,9 @@ namespace Microsoft.AspNetCore.Mvc.Routing
             {
                 throw new ArgumentNullException(nameof(candidates));
             }
+
+            // The per-route selector, must be the same for all the endpoints we are dealing with.
+            DynamicControllerEndpointSelector selector = null;
 
             // There's no real benefit here from trying to avoid the async state machine.
             // We only execute on nodes that contain a dynamic policy, and thus always have
@@ -127,7 +130,9 @@ namespace Microsoft.AspNetCore.Mvc.Routing
                     continue;
                 }
 
-                var endpoints = _selector.SelectEndpoints(dynamicValues);
+                selector = ResolveSelector(selector, endpoint);
+
+                var endpoints = selector.SelectEndpoints(dynamicValues);
                 if (endpoints.Count == 0 && dynamicControllerMetadata != null)
                 {
                     // Naving no match for a fallback is a configuration error. We can't really check
@@ -171,6 +176,17 @@ namespace Microsoft.AspNetCore.Mvc.Routing
                 // Expand the list of endpoints
                 candidates.ExpandEndpoint(i, endpoints, _comparer);
             }
+        }
+
+        private DynamicControllerEndpointSelector ResolveSelector(DynamicControllerEndpointSelector currentSelector, Endpoint endpoint)
+        {
+            var selector = _selectorCache.GetEndpointSelector(endpoint);
+            if (currentSelector != null && !ReferenceEquals(currentSelector, selector))
+            {
+                throw new InvalidOperationException("Can't dynamically select controllers across router middlwares.");
+            }
+
+            return selector;
         }
     }
 }

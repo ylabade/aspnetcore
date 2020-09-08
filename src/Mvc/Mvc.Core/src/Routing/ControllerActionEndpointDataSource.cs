@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -17,8 +18,10 @@ namespace Microsoft.AspNetCore.Mvc.Routing
         private readonly ActionEndpointFactory _endpointFactory;
         private readonly OrderedEndpointsSequenceProvider _orderSequence;
         private readonly List<ConventionalRouteEntry> _routes;
+        private readonly int _dataSourceId;
 
         public ControllerActionEndpointDataSource(
+            ControllerActionEndpointDataSourceIdProvider dataSourceIdProvider,
             IActionDescriptorCollectionProvider actions,
             ActionEndpointFactory endpointFactory,
             OrderedEndpointsSequenceProvider orderSequence)
@@ -26,6 +29,7 @@ namespace Microsoft.AspNetCore.Mvc.Routing
         {
             _endpointFactory = endpointFactory;
             _orderSequence = orderSequence;
+            _dataSourceId = dataSourceIdProvider.CreateId();
             _routes = new List<ConventionalRouteEntry>();
 
             DefaultBuilder = new ControllerActionEndpointConventionBuilder(Lock, Conventions);
@@ -34,6 +38,8 @@ namespace Microsoft.AspNetCore.Mvc.Routing
             // Change notifications can happen immediately!
             Subscribe();
         }
+
+        public int DataSourceId => _dataSourceId;
 
         public ControllerActionEndpointConventionBuilder DefaultBuilder { get; }
 
@@ -118,6 +124,7 @@ namespace Microsoft.AspNetCore.Mvc.Routing
                     {
                         ((RouteEndpointBuilder)b).Order = order;
                         b.Metadata.Add(new DynamicControllerRouteValueTransformerMetadata(transformerType, state));
+                        b.Metadata.Add(new EndpointDataSourceIdMetadata(_dataSourceId));
                     });
             }
         }
